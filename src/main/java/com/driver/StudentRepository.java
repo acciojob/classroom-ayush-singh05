@@ -42,8 +42,8 @@ public class StudentRepository {
     }
 
     public void deleteTeacher(String teacher) {
-        Teacher teach = teacherDB.get(teacher);
-        teacherDB.remove(teach.getName());
+
+        teacherDB.remove(teacher);
     }
 
     public List<String> getStudent(String teacher) {
