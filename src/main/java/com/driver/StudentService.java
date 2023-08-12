@@ -8,7 +8,7 @@ import java.util.List;
 @Service
 public class StudentService {
     @Autowired
-    StudentRepository studentRepository = new StudentRepository();
+    StudentRepository studentRepository;
     public void addStudent(Student student) {
         studentRepository.addStudent(student);
     }
@@ -17,31 +17,31 @@ public class StudentService {
         studentRepository.addTeacher(teacher);
     }
 
-    public List<String> getAllStudent() {
-        return studentRepository.getAllStudent();
+    public void addStudentTeacherPair(String student, String teacher) {
+        studentRepository.addStudentTeacherPair(student, teacher);
     }
 
     public Student getStudentByName(String name) {
         return studentRepository.getStudentByName(name);
     }
 
-    public Teacher getTeacher(String name) {
-        return studentRepository.getTeacher(name);
+    public Teacher getTeacherByName(String name) {
+        return studentRepository.getTeacherByName(name);
     }
 
-    public void deleteAllTeacher() {
-        studentRepository.deleteAllTeacher();
+    public List<String> getStudentsByTeacherName(String teacher) {
+        return studentRepository.getStudentsByTeacherName(teacher);
     }
 
-    public void deleteTeacher(String teacher) {
-        studentRepository.deleteTeacher(teacher);
+    public List<String> getAllStudents() {
+        return studentRepository.getAllStudents();
     }
 
-    public List<String> getStudent(String teacher) {
-        return studentRepository.getStudent(teacher);
+    public void deleteTeacherByName(String teacher) {
+        studentRepository.deleteTeacherByName(teacher);
     }
 
-    public void addPair(String student, String teacher) {
-        studentRepository.addPair(student,teacher);
+    public void deleteAllTeachers() {
+        studentRepository.deleteAllTeachers();
     }
 }

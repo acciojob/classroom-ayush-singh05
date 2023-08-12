@@ -5,61 +5,106 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class StudentRepository {
-    HashMap<String,Student> studentDb = new HashMap<>();
-    HashMap<String,Teacher> teacherDB = new HashMap<>();
-    HashMap<String,List<String>> pairDb = new HashMap<>();
 
+    List<Student> studentMap = new ArrayList<>();
+
+    List<Teacher> teacherMap = new ArrayList<>();
+
+    Map<Teacher, List<Student>> teacherStudentsMap = new HashMap<>();
     public void addStudent(Student student) {
-        studentDb.put(student.getName(),student);
+        studentMap.add(student);
     }
 
     public void addTeacher(Teacher teacher) {
-        teacherDB.put(teacher.getName(),teacher);
+        teacherMap.add(teacher);
     }
 
-    public List<String> getAllStudent() {
-        List<String> allStudent = new ArrayList<>();
-        for(String str : studentDb.keySet()) {
-            Student std = studentDb.get(str);
-            allStudent.add(std.getName());
+    public void addStudentTeacherPair(String student, String teacher) {
+        Student student1=null;
+        for (Student s:studentMap) {
+            if(s.getName().equals(student)){
+                student1=s;
+                break;
+            }
         }
-        return allStudent;
+
+        Teacher teacher1=null;
+        for (Teacher t:teacherMap) {
+            if (t.getName().equals(teacher)){
+                teacher1=t;
+                break;
+            }
+        }
+
+        if(student1==null || teacher1==null) return;
+        List<Student> studentList=teacherStudentsMap.getOrDefault(teacher1,new ArrayList<>());
+        studentList.add(student1);
+        teacher1.setNumberOfStudents(1+teacher1.getNumberOfStudents());
+        teacherStudentsMap.put(teacher1,studentList);
     }
 
     public Student getStudentByName(String name) {
-        return studentDb.get(name);
-    }
-
-    public Teacher getTeacher(String name) {
-        return teacherDB.get(name);
-    }
-
-    public void deleteAllTeacher() {
-        teacherDB.clear();
-    }
-
-    public void deleteTeacher(String teacher) {
-
-        teacherDB.remove(teacher);
-    }
-
-    public List<String> getStudent(String teacher) {
-        List<String> std = pairDb.get(teacher);
-        return std;
-    }
-
-    public void addPair(String student, String teacher) {
-        List<String> pair = pairDb.get(teacher);
-        if(pair != null) {
-            pair.add(student);
-            pairDb.put(teacher,pair);
-        }else {
-            pair = new ArrayList<>();
-            pair.add(student);
-            pairDb.put(teacher,pair);
+        for (Student s:studentMap) {
+            if(s.getName().equals(name)){
+                return s;
+            }
         }
+        return null;
+    }
+
+    public Teacher getTeacherByName(String name) {
+        for (Teacher t:teacherMap) {
+            if (t.getName().equals(name)){
+                return t;
+            }
+        }
+        return null;
+    }
+
+    public List<String> getStudentsByTeacherName(String teacher) {
+        List<String> studentList = new ArrayList<>();
+        for (Teacher t:teacherStudentsMap.keySet()) {
+            if(t.getName().equals(teacher)){
+                for (Student s:teacherStudentsMap.get(t)) {
+                    studentList.add(s.getName());
+                }
+            }
+        }
+        return studentList;
+    }
+
+    public List<String> getAllStudents() {
+        List<String> studentList = new ArrayList<>();
+        for (Student s:studentMap) {
+            studentList.add(s.getName());
+        }
+        return studentList;
+    }
+
+    public void deleteTeacherByName(String teacher) {
+        Teacher teacher1=null;
+        for (Teacher t:teacherMap) {
+            if (t.getName().equals(teacher)){
+                teacher1=t;
+                break;
+            }
+        }
+        if (teacher1==null) return;
+        List<Student> studentList = teacherStudentsMap.getOrDefault(teacher1,new ArrayList<>());
+        teacherMap.remove(teacher1);
+        teacherStudentsMap.remove(teacher1);
+        studentMap.removeAll(studentList);
+    }
+
+    public void deleteAllTeachers() {
+        for (Teacher teacher:teacherMap) {
+            if(teacherStudentsMap.get(teacher)!=null) studentMap.removeAll(teacherStudentsMap.get(teacher));
+        }
+        teacherMap.clear();
+        teacherStudentsMap.clear();
     }
 }
